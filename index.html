@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Health Report</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f8fafc;
+            padding: 20px;
+            line-height: 1.4;
+            zoom: 0.8; /* Makes it easier to capture full image */
+        }
+        
+        .report-container {
+            max-width: 595px; /* A4 width in pixels at 72 DPI */
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #2F80ED, #1E40AF);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 16px;
+            font-weight: 700;
+        }
+        
+        .header-title {
+            font-size: 18px;
+            font-weight: 600;
+            text-align: center;
+        }
+        
+        .header-right {
+            text-align: right;
+            font-size: 12px;
+        }
+        
+        .report-content {
+            padding: 0;
+        }
+        
+        /* Section Styling */
+        .section {
+            padding: 20px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .section:last-child {
+            border-bottom: none;
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a202c;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 20px;
+            background: #2F80ED;
+            margin-right: 10px;
+            border-radius: 2px;
+        }
+        
+        /* Car Details */
+        .car-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            background: #f8fafc;
+            padding: 16px;
+            border-radius: 8px;
+        }
+        
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+        }
+        
+        .detail-label {
+            font-weight: 500;
+            color: #4a5568;
+        }
+        
+        .detail-value {
+            font-weight: 600;
+            color: #1a202c;
+        }
+        
+        /* Health Score */
+        .health-score-container {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+        
+        .score-gauge {
+            position: relative;
+            width: 120px;
+            height: 120px;
+        }
+        
+        .gauge-bg {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: conic-gradient(
+                #27AE60 0deg 140deg,
+                #F2C94C 140deg 220deg,
+                #EB5757 220deg 360deg
+            );
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .gauge-inner {
+            width: 90px;
+            height: 90px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .score-number {
+            font-size: 24px;
+            font-weight: 800;
+            color: #1a202c;
+        }
+        
+        .score-text {
+            font-size: 10px;
+            color: #718096;
+            margin-top: 2px;
+        }
+        
+        .gauge-pointer {
+            position: absolute;
+            width: 2px;
+            height: 45px;
+            background: #1a202c;
+            top: 15px;
+            left: 50%;
+            transform-origin: bottom center;
+            transform: translateX(-50%) rotate(140deg);
+            border-radius: 2px;
+        }
+        
+        .gauge-pointer::after {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: -3px;
+            width: 8px;
+            height: 8px;
+            background: #1a202c;
+            border-radius: 50%;
+        }
+        
+        .score-info {
+            flex: 1;
+        }
+        
+        .score-status {
+            font-size: 18px;
+            font-weight: 700;
+            color: #F2C94C;
+            margin-bottom: 8px;
+        }
+        
+        .score-description {
+            color: #4a5568;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        
+        /* Key Findings Table */
+        .findings-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        
+        .findings-table th {
+            background: #f8fafc;
+            padding: 12px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 600;
+            color: #4a5568;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        
+        .findings-table td {
+            padding: 12px;
+            font-size: 13px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .findings-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .status-healthy {
+            color: #27AE60;
+            font-weight: 600;
+        }
+        
+        .status-advisory {
+            color: #F2C94C;
+            font-weight: 600;
+        }
+        
+        .status-critical {
+            color: #EB5757;
+            font-weight: 600;
+        }
+        
+        /* Predictions */
+        .predictions-list {
+            background: #fef5e7;
+            border-left: 4px solid #F2C94C;
+            padding: 16px;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .prediction-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 13px;
+            color: #744210;
+        }
+        
+        .prediction-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .prediction-item::before {
+            content: '⚠️';
+            margin-right: 10px;
+            font-size: 14px;
+        }
+        
+        /* Recommendations */
+        .recommendations-list {
+            list-style: none;
+        }
+        
+        .recommendation-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 13px;
+        }
+        
+        .recommendation-item:last-child {
+            border-bottom: none;
+        }
+        
+        .recommendation-text {
+            flex: 1;
+            color: #1a202c;
+        }
+        
+        .recommendation-number {
+            background: #2F80ED;
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 600;
+            margin-right: 12px;
+        }
+        
+        .offer-badge {
+            background: #27AE60;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 500;
+        }
+        
+        /* History */
+        .history-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+        }
+        
+        .history-item {
+            background: #f8fafc;
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .history-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        
+        .history-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #1a202c;
+            margin-bottom: 4px;
+        }
+        
+        .history-date {
+            font-size: 11px;
+            color: #718096;
+            margin-bottom: 4px;
+        }
+        
+        .history-status {
+            font-size: 10px;
+            color: #27AE60;
+            font-weight: 500;
+        }
+        
+        .cta-button {
+            width: 100%;
+            background: linear-gradient(135deg, #2F80ED, #1E40AF);
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-top: 16px;
+            cursor: pointer;
+        }
+        
+        /* Footer */
+        .footer {
+            background: #1a202c;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .disclaimer {
+            font-size: 10px;
+            color: #a0aec0;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+        
+        .contact-info {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            font-size: 12px;
+        }
+        
+        .contact-item {
+            color: #2F80ED;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        /* Colors */
+        .color-healthy { color: #27AE60; }
+        .color-advisory { color: #F2C94C; }
+        .color-critical { color: #EB5757; }
+        .color-brand { color: #2F80ED; }
+        
+        .bg-healthy { background-color: #27AE60; }
+        .bg-advisory { background-color: #F2C94C; }
+        .bg-critical { background-color: #EB5757; }
+        .bg-brand { background-color: #2F80ED; }
+    </style>
+</head>
+<body>
+    <div class="report-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">🧤 Mr. White Gloves</div>
+            <div class="header-title">Car Health & Wash Report</div>
+            <div class="header-right">
+                <div>30 Aug 2025</div>
+                <div>Report ID: #AT2025089</div>
+            </div>
+        </div>
+        
+        <div class="report-content">
+            <!-- Section 1: Car Details -->
+            <div class="section">
+                <div class="section-title">Vehicle Information</div>
+                <div class="car-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Car Owner:</span>
+                        <span class="detail-value">Rahul Verma</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Car:</span>
+                        <span class="detail-value">Hyundai i20 (2021)</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Registration:</span>
+                        <span class="detail-value">JH05 AB 1234</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Odometer:</span>
+                        <span class="detail-value">42,350 km</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Section 2: Health Score -->
+            <div class="section">
+                <div class="section-title">Overall Health Score</div>
+                <div class="health-score-container">
+                    <div class="score-gauge">
+                        <div class="gauge-bg">
+                            <div class="gauge-inner">
+                                <div class="score-number">78</div>
+                                <div class="score-text">out of 100</div>
+                            </div>
+                            <div class="gauge-pointer"></div>
+                        </div>
+                    </div>
+                    <div class="score-info">
+                        <div class="score-status">Yellow Zone</div>
+                        <div class="score-description">
+                            Your car is in <strong>Advisory Zone</strong> and needs attention soon. Some components require monitoring and potential replacement in the coming months.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Section 3: Key Findings -->
+            <div class="section">
+                <div class="section-title">Key Findings</div>
+                <table class="findings-table">
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Status</th>
+                            <th>Note</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>🔋 Battery</td>
+                            <td class="status-advisory">Weak – 12.1V</td>
+                            <td>May fail in 2 months</td>
+                        </tr>
+                        <tr>
+                            <td>🌡️ Coolant Temp</td>
+                            <td class="status-healthy">Normal – 88°C</td>
+                            <td>All good</td>
+                        </tr>
+                        <tr>
+                            <td>⚙️ Engine Codes</td>
+                            <td class="status-critical">P0301 – Misfire</td>
+                            <td>Garage check advised</td>
+                        </tr>
+                        <tr>
+                            <td>🛞 Tyres</td>
+                            <td class="status-advisory">Front Worn</td>
+                            <td>Replace soon</td>
+                        </tr>
+                        <tr>
+                            <td>💡 Lights/Wipers</td>
+                            <td class="status-healthy">OK</td>
+                            <td>—</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Section 4: Predictions -->
+            <div class="section">
+                <div class="section-title">Predictive Maintenance</div>
+                <div class="predictions-list">
+                    <div class="prediction-item">
+                        Battery may fail in 2–3 months
+                    </div>
+                    <div class="prediction-item">
+                        Tyres may need replacement in 1,000–1,500 km
+                    </div>
+                    <div class="prediction-item">
+                        Engine misfire requires immediate attention
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Section 5: Recommendations -->
+            <div class="section">
+                <div class="section-title">Service Recommendations</div>
+                <div class="recommendations-list">
+                    <div class="recommendation-item">
+                        <div class="recommendation-number">1</div>
+                        <div class="recommendation-text">Replace Battery → Partner Offer: Exide</div>
+                        <div class="offer-badge">5% OFF</div>
+                    </div>
+                    <div class="recommendation-item">
+                        <div class="recommendation-number">2</div>
+                        <div class="recommendation-text">Tyre Replacement → MRF / Apollo</div>
+                        <div class="offer-badge">Tap to Book</div>
+                    </div>
+                    <div class="recommendation-item">
+                        <div class="recommendation-number">3</div>
+                        <div class="recommendation-text">Engine Service → Misfire Diagnosis</div>
+                        <div class="offer-badge">Urgent</div>
+                    </div>
+                    <div class="recommendation-item">
+                        <div class="recommendation-number">4</div>
+                        <div class="recommendation-text">Routine Service → Due in 30 days</div>
+                        <div class="offer-badge">Schedule</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Section 6: History -->
+            <div class="section">
+                <div class="section-title">Service History Snapshot</div>
+                <div class="history-grid">
+                    <div class="history-item">
+                        <div class="history-icon">🚿</div>
+                        <div class="history-title">Last Wash</div>
+                        <div class="history-date">29 Aug 2025</div>
+                        <div class="history-status">✅ Complete</div>
+                    </div>
+                    <div class="history-item">
+                        <div class="history-icon">🔍</div>
+                        <div class="history-title">Last Health Scan</div>
+                        <div class="history-date">29 Aug 2025</div>
+                        <div class="history-status">✅ Complete</div>
+                    </div>
+                    <div class="history-item">
+                        <div class="history-icon">📊</div>
+                        <div class="history-title">Reports Stored</div>
+                        <div class="history-date">Total: 3</div>
+                        <div class="history-status">📈 Growing</div>
+                    </div>
+                </div>
+                <button class="cta-button">📱 Track Full History in App</button>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <div class="disclaimer">
+                <strong>Disclaimer:</strong> This is an advisory health report based on OBD scan & visual checks. 
+                For confirmation, visit an authorized service center.
+            </div>
+            <div class="contact-info">
+                <a href="#" class="contact-item">💬 WhatsApp</a>
+                <a href="#" class="contact-item">📞 Call</a>
+                <a href="#" class="contact-item">🌐 Website</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
