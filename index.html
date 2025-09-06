@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Car Health Report</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -17,7 +18,6 @@
             background: #f8fafc;
             padding: 20px;
             line-height: 1.4;
-            zoom: 0.8; /* Makes it easier to capture full image */
         }
         
         .report-container {
@@ -31,7 +31,7 @@
         
         /* Header */
         .header {
-            background: linear-gradient(135deg, #424242, #101010);
+            background: linear-gradient(135deg, #2F80ED, #1E40AF);
             color: white;
             padding: 20px;
             display: flex;
@@ -39,12 +39,7 @@
             align-items: center;
         }
         
-        .logo {
-            font-size: 4px;
-            font-weight: 700;
-        }
-
-        .logo img{
+        .logo img {
             width: 100px;
             height: 40px;
         }
@@ -208,8 +203,74 @@
             font-size: 14px;
             line-height: 1.4;
         }
+
+        /* Driving Performance Styles */
+        .performance-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .performance-card {
+            background: #f8fafc;
+            padding: 16px;
+            border-radius: 8px;
+            border-left: 4px solid;
+        }
+
+        .performance-card.fuel {
+            border-color: #F2C94C;
+        }
+
+        .performance-card.driving {
+            border-color: #EB5757;
+        }
+
+        .performance-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .performance-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a202c;
+        }
+
+        .performance-change {
+            font-size: 12px;
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .performance-change.negative {
+            background: #fed7d7;
+            color: #c53030;
+        }
+
+        .performance-change.neutral {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .performance-metric {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 4px;
+        }
+
+        .performance-description {
+            font-size: 12px;
+            color: #4a5568;
+            line-height: 1.3;
+        }
         
-        /* Key Findings Table */
+        /* Enhanced Findings Table */
         .findings-table {
             width: 100%;
             border-collapse: collapse;
@@ -218,17 +279,17 @@
         
         .findings-table th {
             background: #f8fafc;
-            padding: 12px;
+            padding: 12px 8px;
             text-align: left;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
             color: #4a5568;
             border-bottom: 2px solid #e2e8f0;
         }
         
         .findings-table td {
-            padding: 12px;
-            font-size: 13px;
+            padding: 12px 8px;
+            font-size: 12px;
             border-bottom: 1px solid #e2e8f0;
         }
         
@@ -250,8 +311,92 @@
             color: #EB5757;
             font-weight: 600;
         }
+
+        .severity-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 6px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .severity-low {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .severity-medium {
+            background: #fed7aa;
+            color: #c05621;
+        }
+
+        .severity-high {
+            background: #fed7d7;
+            color: #c53030;
+        }
+
+        .cost-estimate {
+            font-size: 11px;
+            color: #4a5568;
+            font-style: italic;
+        }
+
+        /* Comparative Analysis */
+        .comparison-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+
+        .comparison-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .comparison-metric {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .comparison-description {
+            font-size: 12px;
+            opacity: 0.9;
+            line-height: 1.3;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .comparison-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .comparison-item-title {
+            font-size: 11px;
+            opacity: 0.8;
+            margin-bottom: 4px;
+        }
+
+        .comparison-item-value {
+            font-size: 14px;
+            font-weight: 600;
+        }
         
-        /* Predictions */
+        /* Enhanced Predictions */
         .predictions-list {
             background: #fef5e7;
             border-left: 4px solid #F2C94C;
@@ -262,22 +407,82 @@
         .prediction-item {
             display: flex;
             align-items: center;
-            margin-bottom: 8px;
-            font-size: 13px;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 12px;
             color: #744210;
         }
         
         .prediction-item:last-child {
             margin-bottom: 0;
         }
-        
-        .prediction-item::before {
-            content: '⚠️';
-            margin-right: 10px;
-            font-size: 14px;
+
+        .prediction-text {
+            flex: 1;
         }
         
-        /* Recommendations */
+        .prediction-text::before {
+            content: '⚠️';
+            margin-right: 8px;
+            font-size: 14px;
+        }
+
+        .prediction-timeline {
+            background: rgba(244, 208, 63, 0.2);
+            color: #744210;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        /* Resale Value Section */
+        .resale-container {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .resale-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .resale-value {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .resale-change {
+            font-size: 14px;
+            margin-bottom: 12px;
+            opacity: 0.9;
+        }
+
+        .resale-factors {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .resale-factor {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 11px;
+        }
+
+        .resale-factor-title {
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+        
+        /* Enhanced Recommendations */
         .recommendations-list {
             list-style: none;
         }
@@ -295,9 +500,16 @@
             border-bottom: none;
         }
         
+        .recommendation-content {
+            display: flex;
+            align-items: center;
+            flex: 1;
+        }
+
         .recommendation-text {
             flex: 1;
             color: #1a202c;
+            margin-left: 12px;
         }
         
         .recommendation-number {
@@ -311,11 +523,33 @@
             justify-content: center;
             font-size: 11px;
             font-weight: 600;
-            margin-right: 12px;
+        }
+
+        .recommendation-badges {
+            display: flex;
+            gap: 6px;
         }
         
         .offer-badge {
             background: #27AE60;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 500;
+        }
+
+        .urgency-badge {
+            background: #EB5757;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 500;
+        }
+
+        .timeline-badge {
+            background: #2F80ED;
             color: white;
             padding: 3px 8px;
             border-radius: 12px;
@@ -412,14 +646,75 @@
         .bg-advisory { background-color: #F2C94C; }
         .bg-critical { background-color: #EB5757; }
         .bg-brand { background-color: #2F80ED; }
+        
+        /* Download Button Styles */
+        .download-section {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        
+        .download-btn {
+            background: linear-gradient(135deg, #27AE60, #1E90FF);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(39, 174, 96, 0.4);
+        }
+        
+        .download-btn:active {
+            transform: translateY(0);
+        }
+        
+        .download-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .loading {
+            display: none;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #ffffff;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
-    <div class="report-container">
+    <!-- Download Button -->
+    <div class="download-section">
+        <button class="download-btn" onclick="downloadPDF()">
+            <span class="download-text">📄 Download PDF</span>
+            <div class="loading"></div>
+        </button>
+    </div>
+
+    <div class="report-container" id="report-content">
         <!-- Header -->
         <div class="header">
-            <div class="logo">
-                <img src="https://static.wixstatic.com/media/cecea2_edb086aba6e04a32a3fec41db426f2f0~mv2.avif/v1/fill/w_265,h_126,al_c,lg_1,q_80,enc_avif,quality_auto/transparent%20logo%20mwg.avif" alt="">
+            <div class="logo"><img src="https://static.wixstatic.com/media/cecea2_edb086aba6e04a32a3fec41db426f2f0~mv2.avif/v1/fill/w_265,h_126,al_c,lg_1,q_80,enc_avif,quality_auto/transparent%20logo%20mwg.avif" alt="">
             </div>
             <div class="header-title">Car Health Report</div>
             <div class="header-right">
@@ -473,87 +768,202 @@
                     </div>
                 </div>
             </div>
-            
-            <!-- Section 3: Key Findings -->
+
+            <!-- NEW: Driving Performance & Fuel Efficiency -->
             <div class="section">
-                <div class="section-title">Key Findings</div>
+                <div class="section-title">Driving Performance Analysis</div>
+                <div class="performance-grid">
+                    <div class="performance-card fuel">
+                        <div class="performance-header">
+                            <div class="performance-title">⛽ Fuel Efficiency</div>
+                            <div class="performance-change negative">-20%</div>
+                        </div>
+                        <div class="performance-metric">14.2 km/l</div>
+                        <div class="performance-description">
+                            Down from 17.8 km/l last month due to aggressive driving patterns detected in last 2 weeks.
+                        </div>
+                    </div>
+                    <div class="performance-card driving">
+                        <div class="performance-header">
+                            <div class="performance-title">🚗 Driving Behavior</div>
+                            <div class="performance-change negative">Aggressive</div>
+                        </div>
+                        <div class="performance-metric">67/100</div>
+                        <div class="performance-description">
+                            Higher acceleration, frequent hard braking, and speeding incidents detected. Impact on fuel & wear.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NEW: Comparative Analysis -->
+            <div class="section">
+                <div class="section-title">Performance vs Similar Vehicles</div>
+                <div class="comparison-card">
+                    <div class="comparison-title">📊 Your Hyundai i20 vs 47 other i20s (Sept 2025)</div>
+                    <div class="comparison-metric">Bottom 30%</div>
+                    <div class="comparison-description">
+                        Your i20 ranks lower than 70% of similar vehicles we've analyzed this month. Key areas for improvement: fuel efficiency and engine health.
+                    </div>
+                    <div class="comparison-grid">
+                        <div class="comparison-item">
+                            <div class="comparison-item-title">Health Score</div>
+                            <div class="comparison-item-value">78 vs 84 avg</div>
+                        </div>
+                        <div class="comparison-item">
+                            <div class="comparison-item-title">Fuel Efficiency</div>
+                            <div class="comparison-item-value">14.2 vs 16.8 avg</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Section 3: Enhanced Key Findings -->
+            <div class="section">
+                <div class="section-title">Detailed Component Analysis</div>
                 <table class="findings-table">
                     <thead>
                         <tr>
-                            <th>Parameter</th>
+                            <th>Component</th>
                             <th>Status</th>
-                            <th>Note</th>
+                            <th>Severity</th>
+                            <th>Est. Cost</th>
+                            <th>Timeline</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td>🔋 Battery</td>
                             <td class="status-advisory">Weak – 12.1V</td>
-                            <td>May fail in 2 months</td>
+                            <td><span class="severity-badge severity-medium">Medium</span></td>
+                            <td><div class="cost-estimate">₹4,500-6,000</div></td>
+                            <td>2 months</td>
                         </tr>
                         <tr>
-                            <td>🌡️ Coolant Temp</td>
+                            <td>🌡️ Coolant System</td>
                             <td class="status-healthy">Normal – 88°C</td>
-                            <td>All good</td>
+                            <td><span class="severity-badge severity-low">Low</span></td>
+                            <td><div class="cost-estimate">—</div></td>
+                            <td>12+ months</td>
                         </tr>
                         <tr>
-                            <td>⚙️ Engine Codes</td>
-                            <td class="status-critical">P0301 – Misfire</td>
-                            <td>Garage check advised</td>
+                            <td>⚙️ Engine (P0301)</td>
+                            <td class="status-critical">Cylinder 1 Misfire</td>
+                            <td><span class="severity-badge severity-high">High</span></td>
+                            <td><div class="cost-estimate">₹2,500-8,000</div></td>
+                            <td>Immediate</td>
                         </tr>
                         <tr>
                             <td>🛞 Tyres</td>
-                            <td class="status-advisory">Front Worn</td>
-                            <td>Replace soon</td>
+                            <td class="status-advisory">Front 4mm tread</td>
+                            <td><span class="severity-badge severity-medium">Medium</span></td>
+                            <td><div class="cost-estimate">₹12,000-16,000</div></td>
+                            <td>6 months</td>
                         </tr>
                         <tr>
-                            <td>💡 Lights/Wipers</td>
-                            <td class="status-healthy">OK</td>
-                            <td>—</td>
+                            <td>💡 Headlights</td>
+                            <td class="status-healthy">98% luminosity</td>
+                            <td><span class="severity-badge severity-low">Low</span></td>
+                            <td><div class="cost-estimate">—</div></td>
+                            <td>24+ months</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
             
-            <!-- Section 4: Predictions -->
+            <!-- Section 4: Enhanced Predictions -->
             <div class="section">
-                <div class="section-title">Predictive Maintenance</div>
+                <div class="section-title">Predictive Maintenance Timeline</div>
                 <div class="predictions-list">
                     <div class="prediction-item">
-                        Battery may fail in 2–3 months
+                        <span class="prediction-text">Battery voltage dropping - expect failure</span>
+                        <span class="prediction-timeline">2-3 months</span>
                     </div>
                     <div class="prediction-item">
-                        Tyres may need replacement in 1,000–1,500 km
+                        <span class="prediction-text">Front tyres below safety threshold</span>
+                        <span class="prediction-timeline">6 months</span>
                     </div>
                     <div class="prediction-item">
-                        Engine misfire requires immediate attention
+                        <span class="prediction-text">Engine misfire requires immediate attention</span>
+                        <span class="prediction-timeline">Now</span>
+                    </div>
+                    <div class="prediction-item">
+                        <span class="prediction-text">Brake pads showing early wear signs</span>
+                        <span class="prediction-timeline">8-10 months</span>
+                    </div>
+                    <div class="prediction-item">
+                        <span class="prediction-text">Air filter efficiency at 65% - replacement due</span>
+                        <span class="prediction-timeline">3 months</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NEW: Current Resale Value -->
+            <div class="section">
+                <div class="section-title">Current Market Value Assessment</div>
+                <div class="resale-container">
+                    <div class="resale-title">💰 Estimated Resale Value</div>
+                    <div class="resale-value">₹7.2 Lakhs</div>
+                    <div class="resale-change">↓ ₹40,000 from last assessment (due to engine issues)</div>
+                    <div class="resale-factors">
+                        <div class="resale-factor">
+                            <div class="resale-factor-title">Age Impact</div>
+                            <div>-15%</div>
+                        </div>
+                        <div class="resale-factor">
+                            <div class="resale-factor-title">Health Score</div>
+                            <div>-8%</div>
+                        </div>
+                        <div class="resale-factor">
+                            <div class="resale-factor-title">Market Demand</div>
+                            <div>+3%</div>
+                        </div>
                     </div>
                 </div>
             </div>
             
-            <!-- Section 5: Recommendations -->
+            <!-- Section 5: Enhanced Recommendations -->
             <div class="section">
-                <div class="section-title">Service Recommendations</div>
+                <div class="section-title">Priority Action Plan</div>
                 <div class="recommendations-list">
                     <div class="recommendation-item">
-                        <div class="recommendation-number">1</div>
-                        <div class="recommendation-text">Replace Battery → Partner Offer: Exide</div>
-                        <div class="offer-badge">5% OFF</div>
+                        <div class="recommendation-content">
+                            <div class="recommendation-number">1</div>
+                            <div class="recommendation-text">Engine Misfire Diagnosis & Repair (P0301)</div>
+                        </div>
+                        <div class="recommendation-badges">
+                            <div class="urgency-badge">Urgent</div>
+                            <div class="offer-badge">Book Now</div>
+                        </div>
                     </div>
                     <div class="recommendation-item">
-                        <div class="recommendation-number">2</div>
-                        <div class="recommendation-text">Tyre Replacement → MRF / Apollo</div>
-                        <div class="offer-badge">Tap to Book</div>
+                        <div class="recommendation-content">
+                            <div class="recommendation-number">2</div>
+                            <div class="recommendation-text">Replace Battery → Exide/Amaron</div>
+                        </div>
+                        <div class="recommendation-badges">
+                            <div class="timeline-badge">2 months</div>
+                            <div class="offer-badge">5% OFF</div>
+                        </div>
                     </div>
                     <div class="recommendation-item">
-                        <div class="recommendation-number">3</div>
-                        <div class="recommendation-text">Engine Service → Misfire Diagnosis</div>
-                        <div class="offer-badge">Urgent</div>
+                        <div class="recommendation-content">
+                            <div class="recommendation-number">3</div>
+                            <div class="recommendation-text">Improve Driving Habits - Eco Mode Training</div>
+                        </div>
+                        <div class="recommendation-badges">
+                            <div class="offer-badge">Free Tips</div>
+                        </div>
                     </div>
                     <div class="recommendation-item">
-                        <div class="recommendation-number">4</div>
-                        <div class="recommendation-text">Routine Service → Due in 30 days</div>
-                        <div class="offer-badge">Schedule</div>
+                        <div class="recommendation-content">
+                            <div class="recommendation-number">4</div>
+                            <div class="recommendation-text">Tyre Replacement Planning → MRF/Apollo</div>
+                        </div>
+                        <div class="recommendation-badges">
+                            <div class="timeline-badge">6 months</div>
+                            <div class="offer-badge">Pre-book</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -598,5 +1008,100 @@
             </div>
         </div>
     </div>
+
+    <script>
+        async function downloadPDF() {
+            const button = document.querySelector('.download-btn');
+            const downloadText = document.querySelector('.download-text');
+            const loading = document.querySelector('.loading');
+            
+            // Show loading state
+            button.disabled = true;
+            downloadText.style.display = 'none';
+            loading.style.display = 'block';
+            
+            try {
+                const element = document.getElementById('report-content');
+                const opt = {
+                    margin: [10, 10, 10, 10],
+                    filename: `Car_Health_Report_${new Date().toISOString().slice(0, 10)}_#AT2025089.pdf`,
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 2, useCORS: true },
+                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                };
+
+                // Use html2pdf to generate PDF directly from HTML
+                await html2pdf().set(opt).from(element).save();
+
+                showNotification('✅ PDF downloaded successfully!', 'success');
+            } catch (error) {
+                console.error('PDF generation error:', error);
+                showNotification('❌ Error generating PDF. Please try again.', 'error');
+            } finally {
+                button.disabled = false;
+                downloadText.style.display = 'block';
+                loading.style.display = 'none';
+            }
+        }
+        
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.innerHTML = message;
+            notification.style.cssText = `
+                position: fixed;
+                top: 80px;
+                right: 20px;
+                background: ${type === 'success' ? '#27AE60' : '#EB5757'};
+                color: white;
+                padding: 12px 20px;
+                border-radius: 8px;
+                font-size: 14px;
+                font-weight: 500;
+                z-index: 1001;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+                animation: slideIn 0.3s ease;
+            `;
+            
+            if (!document.querySelector('#notification-style')) {
+                const style = document.createElement('style');
+                style.id = 'notification-style';
+                style.textContent = `
+                    @keyframes slideIn {
+                        from { transform: translateX(100%); opacity: 0; }
+                        to { transform: translateX(0); opacity: 1; }
+                    }
+                    @keyframes slideOut {
+                        from { transform: translateX(0); opacity: 1; }
+                        to { transform: translateX(100%); opacity: 0; }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+        
+        document.addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
+                e.preventDefault();
+                downloadPDF();
+            }
+        });
+        
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                showNotification('💡 Tip: Press Ctrl+P to quickly download PDF', 'success');
+            }, 2000);
+        });
+    </script>
 </body>
 </html>
